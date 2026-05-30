@@ -33,11 +33,20 @@ export default defineConfig({
 				]
 			},
 			workbox: {
-				globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}']
+				globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+				inlineWorkboxRuntime: true
 			},
 			devOptions: {
 				enabled: false
 			}
 		})
-	]
+	],
+	build: {
+		rollupOptions: {
+			output: {
+				// Single-screen PWA: all chunks are needed, so merge them into one.
+				manualChunks: () => 'chunks'
+			}
+		}
+	}
 });
