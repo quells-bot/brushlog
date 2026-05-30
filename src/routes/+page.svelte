@@ -2,7 +2,14 @@
 	import { onMount } from 'svelte';
 	import { BrushTimer } from '$lib/timer.svelte.js';
 	import { TOTAL_SECONDS } from '$lib/zones.js';
-	import { saveSession, getSessions, deleteSession } from '$lib/db.js';
+	import {
+		saveSession,
+		getSessions,
+		deleteSession,
+		getSummaries,
+		compactOldSessions
+	} from '$lib/db.js';
+	import { computeStreak, computeTodayCount } from '$lib/history.js';
 	import { formatDuration } from '$lib/format.js';
 	import TimerRing from '$lib/components/TimerRing.svelte';
 	import ZoneDots from '$lib/components/ZoneDots.svelte';
@@ -12,12 +19,15 @@
 
 	/** @type {import('$lib/db.js').BrushSession[]} */
 	let sessions = $state([]);
+	/** @type {import('$lib/db.js').DailySummary[]} */
+	let summaries = $state([]);
 	let saving = $state(false);
 	// Guards against saving the same completed routine twice.
 	let savedThisRun = $state(false);
 
 	onMount(async () => {
-		sessions = await getSessions();
+		await compactOldSessions();
+		[sessions, summaries] = await Promise.all([getSessions(), getSummaries()]);
 	});
 
 	// Persist automatically the moment a routine finishes naturally.
@@ -58,34 +68,11 @@
 		sessions = sessions.filter((s) => s.id !== id);
 	}
 
-	function startOfDay(/** @type {number} */ ms) {
-		// Local, throwaway Date for a pure timestamp calc — not reactive state.
-		// eslint-disable-next-line svelte/prefer-svelte-reactivity
-		const d = new Date(ms);
-		d.setHours(0, 0, 0, 0);
-		return d.getTime();
-	}
+	// Completed sessions logged today.
+	let todayCount = $derived(computeTodayCount(sessions));
 
-	// Number of completed sessions logged today.
-	let todayCount = $derived(
-		sessions.filter((s) => s.completed && startOfDay(s.startedAt) === startOfDay(Date.now())).length
-	);
-
-	// Current run of consecutive days with at least one completed session.
-	let streak = $derived.by(() => {
-		const days = new Set(sessions.filter((s) => s.completed).map((s) => startOfDay(s.startedAt)));
-		if (days.size === 0) return 0;
-		const DAY = 86_400_000;
-		let cursor = startOfDay(Date.now());
-		// Allow the streak to be "alive" if today hasn't been brushed yet.
-		if (!days.has(cursor)) cursor -= DAY;
-		let count = 0;
-		while (days.has(cursor)) {
-			count += 1;
-			cursor -= DAY;
-		}
-		return count;
-	});
+	// Current run of consecutive days with a completed session (raw + compacted).
+	let streak = $derived(computeStreak(sessions, summaries));
 </script>
 
 <svelte:head>
@@ -141,7 +128,7 @@
 		{/if}
 	</section>
 
-	<History {sessions} onDelete={handleDelete} />
+	<History {sessions} {summaries} onDelete={handleDelete} />
 
 	<footer>
 		<p>Works offline · Saved on this device</p>

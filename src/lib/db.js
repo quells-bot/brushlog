@@ -1,9 +1,11 @@
 import { openDB } from 'idb';
 import { browser } from '$app/environment';
+import { rollUpOldSessions } from './history.js';
 
 const DB_NAME = 'brushlog';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 const STORE = 'sessions';
+const SUMMARY_STORE = 'dailySummaries';
 
 /**
  * A single completed (or abandoned) brushing session.
@@ -13,6 +15,12 @@ const STORE = 'sessions';
  * @property {string} label     Human-readable zone name.
  * @property {number} seconds   Seconds actually brushed in this zone.
  * @property {boolean} completed Whether the zone reached its target time.
+ *
+ * @typedef {Object} DailySummary
+ * @property {string} day           Local calendar day, "YYYY-MM-DD" — primary key.
+ * @property {boolean} completed    true if >=1 completed session that day (feeds streak).
+ * @property {number} count         Number of sessions rolled up for that day.
+ * @property {number} totalSeconds  Total seconds brushed that day.
  *
  * @typedef {Object} BrushSession
  * @property {number} [id]          Auto-incremented primary key.
@@ -32,18 +40,53 @@ function getDB() {
 	}
 	if (!dbPromise) {
 		dbPromise = openDB(DB_NAME, DB_VERSION, {
-			upgrade(db) {
-				if (!db.objectStoreNames.contains(STORE)) {
+			upgrade(db, oldVersion) {
+				if (oldVersion < 1) {
 					const store = db.createObjectStore(STORE, {
 						keyPath: 'id',
 						autoIncrement: true
 					});
 					store.createIndex('startedAt', 'startedAt');
 				}
+				if (oldVersion < 2) {
+					db.createObjectStore(SUMMARY_STORE, { keyPath: 'day' });
+				}
 			}
 		});
 	}
 	return dbPromise;
+}
+
+/**
+ * Fetch all per-day summaries (ascending by day key).
+ * @returns {Promise<DailySummary[]>}
+ */
+export async function getSummaries() {
+	const db = await getDB();
+	return /** @type {DailySummary[]} */ (await db.getAll(SUMMARY_STORE));
+}
+
+/**
+ * Roll sessions older than 30 days into per-day summaries, then delete the raw
+ * rows. Idempotent: a no-op when nothing is old enough.
+ * @param {number} [now] epoch milliseconds (defaults to Date.now())
+ * @returns {Promise<void>}
+ */
+export async function compactOldSessions(now = Date.now()) {
+	const db = await getDB();
+	const [sessions, summaries] = await Promise.all([
+		/** @type {Promise<BrushSession[]>} */ (db.getAll(STORE)),
+		getSummaries()
+	]);
+	const { summaries: toPut, deleteIds } = rollUpOldSessions(sessions, summaries, now);
+	if (deleteIds.length === 0) return;
+
+	const tx = db.transaction([STORE, SUMMARY_STORE], 'readwrite');
+	await Promise.all([
+		...toPut.map((s) => tx.objectStore(SUMMARY_STORE).put(s)),
+		...deleteIds.map((id) => tx.objectStore(STORE).delete(id)),
+		tx.done
+	]);
 }
 
 /**

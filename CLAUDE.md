@@ -8,7 +8,8 @@ BrushLog is an offline-first PWA: a guided teeth-brushing timer that logs each s
 
 - `npm run dev` — Vite dev server (PWA disabled in dev).
 - `npm run build` — static build to `./build/`.
-- `npm run check` — type-check (`svelte-kit sync && svelte-check`). No unit tests exist; `check` + `lint` are the verification steps.
+- `npm run check` — type-check (`svelte-kit sync && svelte-check`).
+- `npm run test` — Vitest unit tests for pure logic in `src/lib/` (`*.test.js`). Runs with `TZ=America/New_York` so DST-sensitive date tests are deterministic.
 - `npm run lint` — ESLint (flat config, `eslint-plugin-svelte`).
 - `npm run format` — Prettier (tabs, single quotes, Svelte plugin).
 

@@ -4,9 +4,19 @@
 	let {
 		/** @type {import('$lib/db.js').BrushSession[]} */
 		sessions = [],
+		/** @type {import('$lib/db.js').DailySummary[]} */
+		summaries = [],
 		/** @type {(id: number) => void} */
 		onDelete
 	} = $props();
+
+	// Only the 10 newest raw sessions are listed.
+	let shown = $derived(sessions.slice(0, 10));
+
+	// Everything not listed: undisplayed recent sessions + every compacted session.
+	let earlier = $derived(
+		Math.max(0, sessions.length - 10) + summaries.reduce((n, s) => n + s.count, 0)
+	);
 </script>
 
 <section class="history">
@@ -15,7 +25,7 @@
 		<p class="empty">No sessions yet. Your first brush will show up here.</p>
 	{:else}
 		<ul>
-			{#each sessions as s (s.id)}
+			{#each shown as s (s.id)}
 				<li class:incomplete={!s.completed}>
 					<div class="meta">
 						<span class="when">{formatDateTime(s.startedAt)}</span>
@@ -38,6 +48,9 @@
 				</li>
 			{/each}
 		</ul>
+		{#if earlier > 0}
+			<p class="earlier">+{earlier} earlier session{earlier === 1 ? '' : 's'}</p>
+		{/if}
 	{/if}
 </section>
 
@@ -53,6 +66,12 @@
 	.empty {
 		color: var(--muted, #5f7f7a);
 		font-size: 0.9rem;
+	}
+	.earlier {
+		color: var(--muted, #5f7f7a);
+		font-size: 0.8rem;
+		margin: 0.5rem 0 0;
+		text-align: center;
 	}
 	ul {
 		list-style: none;
