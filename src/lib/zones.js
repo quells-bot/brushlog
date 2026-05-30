@@ -2,10 +2,9 @@
  * The brushing routine, broken into fine-grained zones.
  *
  * Each zone is brushed for {@link ZONE_SECONDS} seconds. The routine walks
- * both arches; for each arch it covers the outer and inner surfaces in three
- * sections (right / front / left) and then the biting (chewing) surfaces of
- * the molars on each side. Front teeth have no biting surface, so biting is
- * only left + right per arch.
+ * both arches; for each arch it sweeps outer left→front→right, then biting
+ * right (corner turn), inner right→front→left, then biting left. Front teeth
+ * have no biting surface, so biting is only left + right per arch.
  *
  *   2 arches × (3 outer + 3 inner) + 2 arches × 2 biting = 16 zones
  *   16 zones × 10s = 160s = 2:40 total
@@ -20,13 +19,13 @@ export const ZONE_SECONDS = 10;
 
 /** @type {Omit<Zone, 'seconds'>[]} */
 const layout = [
-	// Upper arch — outer, then inner (sweeping back the other way), then biting.
+	// Upper arch — outer left→front→right, biting right (corner), inner right→front→left, biting left.
 	{
-		id: 'u-out-r',
+		id: 'u-out-l',
 		arch: 'Upper',
 		surface: 'Outer',
-		label: 'Outer right',
-		hint: 'Cheek side of your upper right teeth'
+		label: 'Outer left',
+		hint: 'Cheek side of your upper left teeth'
 	},
 	{
 		id: 'u-out-f',
@@ -36,32 +35,11 @@ const layout = [
 		hint: 'Cheek side of your upper front teeth'
 	},
 	{
-		id: 'u-out-l',
+		id: 'u-out-r',
 		arch: 'Upper',
 		surface: 'Outer',
-		label: 'Outer left',
-		hint: 'Cheek side of your upper left teeth'
-	},
-	{
-		id: 'u-in-l',
-		arch: 'Upper',
-		surface: 'Inner',
-		label: 'Inner left',
-		hint: 'Palate side of your upper left teeth'
-	},
-	{
-		id: 'u-in-f',
-		arch: 'Upper',
-		surface: 'Inner',
-		label: 'Inner front',
-		hint: 'Palate side of your upper front teeth'
-	},
-	{
-		id: 'u-in-r',
-		arch: 'Upper',
-		surface: 'Inner',
-		label: 'Inner right',
-		hint: 'Palate side of your upper right teeth'
+		label: 'Outer right',
+		hint: 'Cheek side of your upper right teeth'
 	},
 	{
 		id: 'u-bite-r',
@@ -71,6 +49,27 @@ const layout = [
 		hint: 'Chewing surfaces of your upper right molars'
 	},
 	{
+		id: 'u-in-r',
+		arch: 'Upper',
+		surface: 'Inner',
+		label: 'Inner right',
+		hint: 'Palate side of your upper right teeth'
+	},
+	{
+		id: 'u-in-f',
+		arch: 'Upper',
+		surface: 'Inner',
+		label: 'Inner front',
+		hint: 'Palate side of your upper front teeth'
+	},
+	{
+		id: 'u-in-l',
+		arch: 'Upper',
+		surface: 'Inner',
+		label: 'Inner left',
+		hint: 'Palate side of your upper left teeth'
+	},
+	{
 		id: 'u-bite-l',
 		arch: 'Upper',
 		surface: 'Biting',
@@ -78,7 +77,7 @@ const layout = [
 		hint: 'Chewing surfaces of your upper left molars'
 	},
 
-	// Lower arch — mirror the path so the brush flows naturally between arches.
+	// Lower arch — same path: outer left→front→right, biting right, inner right→front→left, biting left.
 	{
 		id: 'l-out-l',
 		arch: 'Lower',
@@ -99,6 +98,13 @@ const layout = [
 		surface: 'Outer',
 		label: 'Outer right',
 		hint: 'Cheek side of your lower right teeth'
+	},
+	{
+		id: 'l-bite-r',
+		arch: 'Lower',
+		surface: 'Biting',
+		label: 'Biting right',
+		hint: 'Chewing surfaces of your lower right molars'
 	},
 	{
 		id: 'l-in-r',
@@ -127,13 +133,6 @@ const layout = [
 		surface: 'Biting',
 		label: 'Biting left',
 		hint: 'Chewing surfaces of your lower left molars'
-	},
-	{
-		id: 'l-bite-r',
-		arch: 'Lower',
-		surface: 'Biting',
-		label: 'Biting right',
-		hint: 'Chewing surfaces of your lower right molars'
 	}
 ];
 
