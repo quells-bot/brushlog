@@ -21,7 +21,7 @@ BrushLog is an offline-first PWA: a guided teeth-brushing timer that logs each s
 
 ## Gotchas
 
-- **Push to `main` auto-deploys** to GitHub Pages via `.github/workflows/deploy.yml`. Work on branches and use PRs unless told otherwise.
-- CI builds with `BASE_PATH=/<repo-name>` so the app can be served from a subpath (project Pages site). Locally `BASE_PATH` defaults to `''`. Don't hardcode absolute paths — use SvelteKit's `base` from `$app/paths`.
+- There is no automated deploy; building/publishing is manual. Work on branches and use PRs unless told otherwise.
+- The build supports serving from a subpath via `BASE_PATH` (e.g. `BASE_PATH=/<repo> npm run build` for a GitHub Pages project site). Locally `BASE_PATH` defaults to `''`. Don't hardcode absolute paths — use SvelteKit's `base` from `$app/paths`.
 - `src/lib/db.js` is client-only and throws if run during SSR; the app is SPA mode (`ssr = false`) with a `404.html` fallback so it boots offline from any URL.
 - The session data model (the `Session` / `ZoneResult` typedefs) is defined in `src/lib/db.js`. Brushing zones are defined in `src/lib/zones.js`.
