@@ -1,0 +1,36 @@
+:root {
+	--accent: #0f766e;
+	--ink: #134e4a;
+	--muted: #5f7f7a;
+	color-scheme: light;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	font-family:
+		system-ui,
+		-apple-system,
+		'Segoe UI',
+		Roboto,
+		Helvetica,
+		Arial,
+		sans-serif;
+	background: linear-gradient(180deg, #ecfdf5 0%, #f0fdfa 100%);
+	min-height: 100vh;
+	min-height: 100dvh;
+	color: var(--ink);
+	-webkit-tap-highlight-color: transparent;
+}
+
+button {
+	font-family: inherit;
+}
