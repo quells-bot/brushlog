@@ -59,6 +59,8 @@
 	}
 
 	function startOfDay(/** @type {number} */ ms) {
+		// Local, throwaway Date for a pure timestamp calc — not reactive state.
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity
 		const d = new Date(ms);
 		d.setHours(0, 0, 0, 0);
 		return d.getTime();
@@ -71,9 +73,7 @@
 
 	// Current run of consecutive days with at least one completed session.
 	let streak = $derived.by(() => {
-		const days = new Set(
-			sessions.filter((s) => s.completed).map((s) => startOfDay(s.startedAt))
-		);
+		const days = new Set(sessions.filter((s) => s.completed).map((s) => startOfDay(s.startedAt)));
 		if (days.size === 0) return 0;
 		const DAY = 86_400_000;
 		let cursor = startOfDay(Date.now());
@@ -86,8 +86,6 @@
 		}
 		return count;
 	});
-
-	let isActive = $derived(timer.status === 'running' || timer.status === 'paused');
 </script>
 
 <svelte:head>
@@ -224,7 +222,9 @@
 		border: none;
 		padding: 0.8rem 1.4rem;
 		cursor: pointer;
-		transition: transform 0.05s ease, background 0.2s ease;
+		transition:
+			transform 0.05s ease,
+			background 0.2s ease;
 	}
 	button:active {
 		transform: scale(0.97);
