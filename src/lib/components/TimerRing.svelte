@@ -19,14 +19,7 @@
 
 <div class="ring" style="--size: {SIZE}px">
 	<svg viewBox="0 0 {SIZE} {SIZE}" width={SIZE} height={SIZE} aria-hidden="true">
-		<circle
-			class="track"
-			cx={SIZE / 2}
-			cy={SIZE / 2}
-			r={R}
-			fill="none"
-			stroke-width={STROKE}
-		/>
+		<circle class="track" cx={SIZE / 2} cy={SIZE / 2} r={R} fill="none" stroke-width={STROKE} />
 		<circle
 			class="progress"
 			cx={SIZE / 2}
