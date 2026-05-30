@@ -129,7 +129,7 @@
 			<TimerRing
 				progress={timer.zoneProgress}
 				value={formatDuration(timer.zoneRemaining)}
-				caption={timer.currentZone.label}
+				caption={`${timer.currentZone.arch} · ${timer.currentZone.label}`}
 			/>
 			<p class="hint">{timer.currentZone.hint}</p>
 			<ZoneDots activeIndex={timer.zoneIndex} perZone={timer.perZone} />
