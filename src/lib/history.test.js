@@ -17,11 +17,34 @@ describe('dayKey', () => {
 	});
 
 	it('zero-pads month and day', () => {
-		expect(dayKey(new Date(2026, 0, 5, 0, 0).getTime())).toBe('2026-01-05');
+		expect(dayKey(new Date(2026, 0, 5, 12, 0).getTime())).toBe('2026-01-05');
 	});
 
 	it('uses local midnight boundaries (late-evening stays same day)', () => {
 		expect(dayKey(new Date(2026, 4, 30, 23, 59).getTime())).toBe('2026-05-30');
+	});
+
+	it('counts post-midnight brushing before 3AM as the previous day', () => {
+		expect(dayKey(new Date(2026, 4, 31, 0, 30).getTime())).toBe('2026-05-30');
+		expect(dayKey(new Date(2026, 4, 31, 2, 59).getTime())).toBe('2026-05-30');
+	});
+
+	it('starts a new day at 3AM', () => {
+		expect(dayKey(new Date(2026, 4, 31, 3, 0).getTime())).toBe('2026-05-31');
+	});
+
+	it('keeps the 3AM cutoff exact on a DST spring-forward day', () => {
+		// US/Eastern springs forward 2026-03-08 (2AM -> 3AM); a 23-hour day.
+		// A fixed-duration offset would push 3:30AM back onto the 7th.
+		expect(dayKey(new Date(2026, 2, 8, 1, 30).getTime())).toBe('2026-03-07');
+		expect(dayKey(new Date(2026, 2, 8, 3, 30).getTime())).toBe('2026-03-08');
+	});
+
+	it('keeps the 3AM cutoff exact on a DST fall-back day', () => {
+		// US/Eastern falls back 2026-11-01 (2AM -> 1AM); a 25-hour day.
+		// A fixed-duration offset would pull 2:30AM forward onto the 1st.
+		expect(dayKey(new Date(2026, 10, 1, 2, 30).getTime())).toBe('2026-10-31');
+		expect(dayKey(new Date(2026, 10, 1, 3, 30).getTime())).toBe('2026-11-01');
 	});
 });
 
@@ -43,6 +66,19 @@ describe('computeTodayCount', () => {
 
 	it('returns 0 with no sessions', () => {
 		expect(computeTodayCount([], now)).toBe(0);
+	});
+
+	it('counts a pre-3AM session toward the prior day', () => {
+		// "now" is 1AM on the 31st, still the 30th's brush day.
+		const lateNight = new Date(2026, 4, 31, 1, 0).getTime();
+		/** @type {Session[]} */
+		const sessions = [
+			{ startedAt: new Date(2026, 4, 30, 21, 0).getTime(), completed: true },
+			{ startedAt: new Date(2026, 4, 31, 0, 45).getTime(), completed: true }
+		];
+		expect(
+			computeTodayCount(/** @type {import('./history.js').BrushSession[]} */ (sessions), lateNight)
+		).toBe(2);
 	});
 });
 
@@ -114,6 +150,23 @@ describe('computeStreak', () => {
 				day(2026, 4, 30)
 			)
 		).toBe(3);
+	});
+
+	it('keeps the streak alive for a session brushed after midnight', () => {
+		/** @type {Session[]} */
+		const sessions = [
+			{ startedAt: day(2026, 4, 29), completed: true },
+			// brushed at 1AM on the 31st — counts as the 30th's brush day
+			{ startedAt: new Date(2026, 4, 31, 1, 0).getTime(), completed: true }
+		];
+		// now = 2AM on the 31st, still the 30th's brush day -> streak of 2
+		expect(
+			computeStreak(
+				/** @type {import('./history.js').BrushSession[]} */ (sessions),
+				[],
+				new Date(2026, 4, 31, 2, 0).getTime()
+			)
+		).toBe(2);
 	});
 
 	it('does not miscount across a DST spring-forward boundary', () => {
