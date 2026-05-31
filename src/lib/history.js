@@ -10,18 +10,36 @@
  */
 
 /**
- * Local calendar day for a timestamp, as a sortable `YYYY-MM-DD` string.
- * @param {number} ms epoch milliseconds
+ * Grace period after midnight that still counts toward the previous day. A
+ * "brush day" runs from 3AM to 3AM, so a late-night session in the small hours
+ * (e.g. brushing at 1AM before bed) logs against the day you just finished
+ * rather than the new calendar date.
+ */
+const GRACE_MS = 3 * 60 * 60 * 1000;
+
+/**
+ * Format a `Date` as a sortable local `YYYY-MM-DD` string.
+ * @param {Date} d
  * @returns {string}
  */
-export function dayKey(ms) {
-	const d = new Date(ms);
+function formatDay(d) {
 	const pad = (/** @type {number} */ n) => String(n).padStart(2, '0');
 	return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
 /**
- * Number of completed sessions started on the same local day as `now`.
+ * "Brush day" for a timestamp, as a sortable `YYYY-MM-DD` string. Times before
+ * 3AM fall on the previous calendar day (see {@link GRACE_MS}).
+ * @param {number} ms epoch milliseconds
+ * @returns {string}
+ */
+export function dayKey(ms) {
+	return formatDay(new Date(ms - GRACE_MS));
+}
+
+/**
+ * Number of completed sessions started on the same brush day as `now`
+ * (sessions in the post-midnight grace window count toward the prior day).
  * @param {BrushSession[]} sessions
  * @param {number} [now] epoch milliseconds (defaults to Date.now())
  * @returns {number}
@@ -32,7 +50,7 @@ export function computeTodayCount(sessions, now = Date.now()) {
 }
 
 /**
- * Current run of consecutive local days with at least one completed session,
+ * Current run of consecutive brush days with at least one completed session,
  * unioning raw sessions with already-compacted day summaries. Walks backward
  * from today (or yesterday, if today is not yet brushed) using `Date.setDate`,
  * which is correct across DST transitions.
@@ -49,13 +67,15 @@ export function computeStreak(sessions, summaries, now = Date.now()) {
 	]);
 	if (days.size === 0) return 0;
 
-	const cursor = new Date(now);
+	// Walk in "brush day" space: shift by the grace period, then to midnight,
+	// so a session logged at 1AM still lands on the day it belongs to.
+	const cursor = new Date(now - GRACE_MS);
 	cursor.setHours(0, 0, 0, 0);
 	// Allow the streak to be "alive" if today hasn't been brushed yet.
-	if (!days.has(dayKey(cursor.getTime()))) cursor.setDate(cursor.getDate() - 1);
+	if (!days.has(formatDay(cursor))) cursor.setDate(cursor.getDate() - 1);
 
 	let count = 0;
-	while (days.has(dayKey(cursor.getTime()))) {
+	while (days.has(formatDay(cursor))) {
 		count += 1;
 		cursor.setDate(cursor.getDate() - 1);
 	}
