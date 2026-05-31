@@ -32,6 +32,20 @@ describe('dayKey', () => {
 	it('starts a new day at 3AM', () => {
 		expect(dayKey(new Date(2026, 4, 31, 3, 0).getTime())).toBe('2026-05-31');
 	});
+
+	it('keeps the 3AM cutoff exact on a DST spring-forward day', () => {
+		// US/Eastern springs forward 2026-03-08 (2AM -> 3AM); a 23-hour day.
+		// A fixed-duration offset would push 3:30AM back onto the 7th.
+		expect(dayKey(new Date(2026, 2, 8, 1, 30).getTime())).toBe('2026-03-07');
+		expect(dayKey(new Date(2026, 2, 8, 3, 30).getTime())).toBe('2026-03-08');
+	});
+
+	it('keeps the 3AM cutoff exact on a DST fall-back day', () => {
+		// US/Eastern falls back 2026-11-01 (2AM -> 1AM); a 25-hour day.
+		// A fixed-duration offset would pull 2:30AM forward onto the 1st.
+		expect(dayKey(new Date(2026, 10, 1, 2, 30).getTime())).toBe('2026-10-31');
+		expect(dayKey(new Date(2026, 10, 1, 3, 30).getTime())).toBe('2026-11-01');
+	});
 });
 
 describe('computeTodayCount', () => {
