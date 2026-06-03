@@ -81,7 +81,7 @@
 
 <main>
 	<header>
-		<h1>🦷 BrushLog</h1>
+		<h1>BrushLog</h1>
 		<div class="stats">
 			<div class="stat">
 				<span class="num">{streak}</span>
