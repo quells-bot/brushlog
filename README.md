@@ -1,4 +1,4 @@
-# 🦷 BrushLog
+# BrushLog
 
 A guided teeth-brushing timer, built as an installable, offline-first PWA.
 It walks you through the four mouth quadrants (30s each, two minutes total),
