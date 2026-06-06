@@ -22,12 +22,16 @@ Built with **Vite + SvelteKit** and shipped as a fully **static site**.
 ## Develop
 
 ```bash
-npm install
-npm run dev      # start the dev server
-npm run build    # produce the static site in ./build
-npm run preview  # preview the production build
-npm run check    # type-check with svelte-check
+pnpm install
+pnpm dev      # start the dev server
+pnpm build    # produce the static site in ./build
+pnpm preview  # preview the production build
+pnpm check    # type-check with svelte-check
 ```
+
+This project uses [pnpm](https://pnpm.io/) (pinned via the `packageManager`
+field in `package.json`); run `corepack enable` once to have the right version
+selected automatically.
 
 ## Tech
 
