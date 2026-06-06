@@ -1,6 +1,7 @@
 import { openDB } from 'idb';
 import { browser } from '$app/environment';
 import { rollUpOldSessions } from './history.js';
+import { buildBackup, mergeBackup } from './backup.js';
 
 const DB_NAME = 'brushlog';
 const DB_VERSION = 2;
@@ -119,4 +120,39 @@ export async function deleteSession(/** @type {number} */ id) {
 export async function clearSessions() {
 	const db = await getDB();
 	await db.clear(STORE);
+}
+
+/**
+ * Snapshot both history stores as a portable, versioned backup object.
+ * @returns {Promise<import('./backup.js').Backup>}
+ */
+export async function exportData() {
+	const [sessions, summaries] = await Promise.all([getSessions(), getSummaries()]);
+	return buildBackup(sessions, summaries);
+}
+
+/**
+ * Merge a backup into the local stores, skipping anything already present.
+ * Imported sessions are added without an `id` so IndexedDB assigns fresh keys.
+ * @param {import('./backup.js').Backup} backup
+ * @returns {Promise<{ addedSessions: number, addedSummaries: number }>}
+ */
+export async function importBackup(backup) {
+	const db = await getDB();
+	const [sessions, summaries] = await Promise.all([
+		/** @type {Promise<BrushSession[]>} */ (db.getAll(STORE)),
+		getSummaries()
+	]);
+	const { sessionsToAdd, summariesToPut } = mergeBackup(sessions, summaries, backup);
+	if (sessionsToAdd.length === 0 && summariesToPut.length === 0) {
+		return { addedSessions: 0, addedSummaries: 0 };
+	}
+
+	const tx = db.transaction([STORE, SUMMARY_STORE], 'readwrite');
+	await Promise.all([
+		...sessionsToAdd.map((s) => tx.objectStore(STORE).add(s)),
+		...summariesToPut.map((s) => tx.objectStore(SUMMARY_STORE).put(s)),
+		tx.done
+	]);
+	return { addedSessions: sessionsToAdd.length, addedSummaries: summariesToPut.length };
 }
