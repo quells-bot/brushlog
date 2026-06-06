@@ -1,5 +1,24 @@
-node_modules
-build
-.svelte-kit
-.git
+# flyctl launch added from .devbox/.gitignore
+.devbox/**/*
+.devbox/**/.*
+
+# flyctl launch added from .gitignore
+**/node_modules
+**/.DS_Store
+
+# build / generated
+**/.svelte-kit
+**/build
+**/dist
+**/.output
+
+# vite-plugin-pwa generated dev assets
+**/dev-dist
+
+# env
+**/.env
+**/.env.*
+!**/.env.example
+fly.toml
+
 .github
