@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { resolve } from '$app/paths';
 	import { BrushTimer } from '$lib/timer.svelte.js';
 	import { TOTAL_SECONDS } from '$lib/zones.js';
 	import {
@@ -91,6 +92,7 @@
 				<span class="num">{todayCount}</span>
 				<span class="lbl">today</span>
 			</div>
+			<a class="settings-link" href={resolve('/settings')} aria-label="Settings">⚙</a>
 		</div>
 	</header>
 
@@ -155,7 +157,14 @@
 	}
 	.stats {
 		display: flex;
+		align-items: center;
 		gap: 1rem;
+	}
+	.settings-link {
+		font-size: 1.3rem;
+		line-height: 1;
+		text-decoration: none;
+		color: var(--muted, #5f7f7a);
 	}
 	.stat {
 		display: flex;
