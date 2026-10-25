@@ -24,7 +24,7 @@ This project uses **pnpm** (pinned via the `packageManager` field in `package.js
 
 ## Gotchas
 
-- There is no automated deploy; building/publishing is manual. Work on branches and use PRs unless told otherwise.
+- The site is auto-deployed to GitHub Pages on merge to `main` (`.github/workflows/deploy.yml`). Work on branches and use PRs unless told otherwise.
 - The build supports serving from a subpath via `BASE_PATH` (e.g. `BASE_PATH=/<repo> pnpm build` for a GitHub Pages project site). Locally `BASE_PATH` defaults to `''`. Don't hardcode absolute paths — use SvelteKit's `base` from `$app/paths`.
 - `src/lib/db.js` is client-only and throws if run during SSR; the app is SPA mode (`ssr = false`) with a `404.html` fallback so it boots offline from any URL.
 - The session data model (the `Session` / `ZoneResult` typedefs) is defined in `src/lib/db.js`. Brushing zones are defined in `src/lib/zones.js`.
