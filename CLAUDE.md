@@ -14,6 +14,7 @@ This project uses **pnpm** (pinned via the `packageManager` field in `package.js
 - `pnpm test` — Vitest unit tests for pure logic in `src/lib/` (`*.test.js`). Runs with `TZ=America/New_York` so DST-sensitive date tests are deterministic.
 - `pnpm lint` — ESLint (flat config, `eslint-plugin-svelte`).
 - `pnpm format` — Prettier (tabs, single quotes, Svelte plugin).
+- `pnpm ios:dev` / `pnpm ios:build` — Tauri 2 iOS app (see `docs/ios.md`; needs Rust, Xcode, CocoaPods).
 
 ## Conventions
 
@@ -28,3 +29,6 @@ This project uses **pnpm** (pinned via the `packageManager` field in `package.js
 - The build supports serving from a subpath via `BASE_PATH` (e.g. `BASE_PATH=/<repo> pnpm build` for a GitHub Pages project site). Locally `BASE_PATH` defaults to `''`. Don't hardcode absolute paths — use SvelteKit's `base` from `$app/paths`.
 - `src/lib/db.js` is client-only and throws if run during SSR; the app is SPA mode (`ssr = false`) with a `404.html` fallback so it boots offline from any URL.
 - The session data model (the `Session` / `ZoneResult` typedefs) is defined in `src/lib/db.js`. Brushing zones are defined in `src/lib/zones.js`.
+- iOS app (Tauri): when `TAURI_ENV_PLATFORM` is set, the build drops the PWA plugin and manifest link (`src/hooks.server.js`) and forces `base` to `''`.
+- Put web-vs-iOS differences in `src/lib/platform.js`; storage I/O goes through `src/lib/store.js` backends (`src/lib/storage/`), never straight to IndexedDB.
+- Don't re-run `tauri ios init`: `src-tauri/gen/apple/project.yml` is hand-edited (Icon Composer `BrushLog.icon`). After editing `project.yml`, run `xcodegen generate` in `src-tauri/gen/apple`.

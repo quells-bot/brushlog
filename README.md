@@ -18,6 +18,9 @@ Built with **Vite + SvelteKit** and shipped as a fully **static site**.
   current day streak.
 - 📲 **Installable PWA** — works offline, installs to the home screen, with a
   service worker that auto-updates.
+- 🍎 **iOS app** — the same code wrapped with Tauri 2, bundled so it launches
+  with no network, with native haptics and share-sheet export. See
+  [docs/ios.md](docs/ios.md).
 
 ## Develop
 
@@ -27,6 +30,8 @@ pnpm dev      # start the dev server
 pnpm build    # produce the static site in ./build
 pnpm preview  # preview the production build
 pnpm check    # type-check with svelte-check
+pnpm ios:dev  # run the iOS app (Tauri) against the dev server
+pnpm ios:build # build the bundled iOS app
 ```
 
 This project uses [pnpm](https://pnpm.io/) (pinned via the `packageManager`
