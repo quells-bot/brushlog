@@ -113,8 +113,8 @@ app force-quit — that it still launches and logs a session.
      ```
 
 4. In App Store Connect → **TestFlight**, add yourself as an internal tester
-   (answer the export-compliance question: BrushLog uses no encryption beyond
-   what iOS provides). Install the **TestFlight** app on the phone and accept
+   (no export-compliance question: `ITSAppUsesNonExemptEncryption` is `false`
+   in `project.yml`). Install the **TestFlight** app on the phone and accept
    the invite. TestFlight builds expire after 90 days.
 
 ## 6. Move your history from the PWA
