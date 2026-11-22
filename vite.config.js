@@ -7,7 +7,8 @@ export default defineConfig({
 		sveltekit(),
 		SvelteKitPWA({
 			registerType: 'autoUpdate',
-			injectRegister: 'auto',
+			// Registered explicitly in src/routes/+layout.svelte (src/lib/sw.js).
+			injectRegister: false,
 			manifest: {
 				name: 'BrushLog',
 				short_name: 'BrushLog',
