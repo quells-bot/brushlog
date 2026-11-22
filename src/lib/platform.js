@@ -24,8 +24,11 @@ export async function haptic(kind) {
 	try {
 		if (isTauri()) {
 			const { impactFeedback, notificationFeedback } = await import('@tauri-apps/plugin-haptics');
-			if (kind === 'zone') await impactFeedback('medium');
-			else await notificationFeedback('success');
+			// The plugin resolves `{ status: 'error' }` (e.g. permission denied)
+			// rather than rejecting, so check the result.
+			const result =
+				kind === 'zone' ? await impactFeedback('medium') : await notificationFeedback('success');
+			if (result?.status === 'error') console.warn('haptic failed', result.error);
 			return;
 		}
 		if (typeof navigator !== 'undefined' && navigator.vibrate) {

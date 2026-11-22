@@ -57,6 +57,16 @@ describe('haptic (tauri)', () => {
 		expect(haptics.notificationFeedback).toHaveBeenCalledWith('success');
 	});
 
+	it('haptic reports error results from the plugin', async () => {
+		const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+		haptics.impactFeedback.mockResolvedValueOnce(
+			/** @type {any} */ ({ status: 'error', error: 'haptics.impact_feedback not allowed' })
+		);
+		await expect(haptic('zone')).resolves.toBeUndefined();
+		expect(warn).toHaveBeenCalledWith('haptic failed', 'haptics.impact_feedback not allowed');
+		warn.mockRestore();
+	});
+
 	it('haptic swallows plugin errors', async () => {
 		haptics.impactFeedback.mockRejectedValueOnce(new Error('no taptic engine'));
 		await expect(haptic('zone')).resolves.toBeUndefined();
