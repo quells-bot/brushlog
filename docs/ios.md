@@ -91,28 +91,50 @@ app force-quit — that it still launches and logs a session.
 
 ## 5. TestFlight
 
-1. In [App Store Connect](https://appstoreconnect.apple.com/) → **Apps → + →
-   New App**: platform iOS, name BrushLog, bundle ID `me.kaiwells.brushlog`,
-   any SKU (e.g. `brushlog`).
-2. Build an App Store archive. Each upload needs a higher build number:
+One-time setup (already done for build 1):
+
+- Register the App ID: [Certificates, Identifiers & Profiles →
+  Identifiers](https://developer.apple.com/account/resources/identifiers/list)
+  → **+ → App IDs → App**, explicit bundle ID `me.kaiwells.brushlog`, no
+  capabilities. (Xcode's automatic signing uses the wildcard team profile for
+  device builds, so it never registers one — and App Store Connect's New App
+  form only lists registered IDs.)
+- In [App Store Connect](https://appstoreconnect.apple.com/) → **Apps → + →
+  New App**: platform iOS, name BrushLog, bundle ID `me.kaiwells.brushlog`,
+  SKU `brushlog`.
+- Upload key: **Users and Access → Integrations → App Store Connect API → +**,
+  access _App Manager_. Download the `.p8` (only possible once) into
+  `~/.appstoreconnect/private_keys/`. Put the Key ID and Issuer ID in your
+  shell profile (they identify the key; the `.p8` is the secret — never
+  commit it):
+
+  ```bash
+  export ASC_KEY_ID=<Key ID>
+  export ASC_ISSUER_ID=<Issuer ID>
+  ```
+
+Each release:
+
+1. Build an App Store export. **Every upload needs a higher build number**
+   than the last (build 1 was uploaded 2026-11-21); it becomes
+   `CFBundleVersion` `0.1.0.<n>`:
 
    ```bash
-   pnpm ios:build --export-method app-store-connect --build-number 1
+   pnpm ios:build --export-method app-store-connect --build-number 2
    ```
 
-3. Upload, either:
-   - **Xcode**: `pnpm tauri ios build --open`, then **Product → Archive →
-     Distribute App → App Store Connect → Upload**; or
-   - **Command line**, with an App Store Connect API key (Users and Access →
-     Integrations → Keys, role _Developer_; save the `.p8` to
-     `~/.appstoreconnect/private_keys/`):
+2. Upload:
 
-     ```bash
-     xcrun altool --upload-app -t ios -f src-tauri/gen/apple/build/arm64/BrushLog.ipa \
-       --apiKey <KEY_ID> --apiIssuer <ISSUER_ID>
-     ```
+   ```bash
+   xcrun altool --upload-app -t ios -f src-tauri/gen/apple/build/arm64/BrushLog.ipa \
+     --apiKey "$ASC_KEY_ID" --apiIssuer "$ASC_ISSUER_ID"
+   ```
 
-4. In App Store Connect → **TestFlight**, add yourself as an internal tester
+   A `CDUploaderStateInfoResumeFilePath` "ERROR" line is harmless; look for
+   `UPLOAD SUCCEEDED`. Apple then processes the build (5–15 min, you get an
+   email).
+
+3. In App Store Connect → **TestFlight**, add yourself as an internal tester
    (no export-compliance question: `ITSAppUsesNonExemptEncryption` is `false`
    in `project.yml`). Install the **TestFlight** app on the phone and accept
    the invite. TestFlight builds expire after 90 days.
