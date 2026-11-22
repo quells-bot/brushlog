@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		01C2F198E658FBA5621C14F1 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1D97DCB6F932B89426C7B928 /* main.mm */; };
+		068FA78F35C4D7F298CBB1F0 /* BrushLog.icon in Resources */ = {isa = PBXBuildFile; fileRef = 74D6F9663BF8F39285FC3B76 /* BrushLog.icon */; };
 		196F3382A7448EFA2639F298 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D57C5D54B08C8D953FFE4D19 /* Metal.framework */; };
 		312FFF030BB173F2DBA61149 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = CC643FC198023D63276548CC /* assets */; };
 		4B160B1CDE75A58215B4B1F8 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D81296866C8279C6E6368F48 /* CoreGraphics.framework */; };
@@ -31,6 +32,7 @@
 		55F02B732E8CA518C08EB24B /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		629F363E30C3312D01596C72 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		6992AFDEEB72DB7B646D5B38 /* brushlog_iOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = brushlog_iOS.entitlements; sourceTree = "<group>"; };
+		74D6F9663BF8F39285FC3B76 /* BrushLog.icon */ = {isa = PBXFileReference; lastKnownFileType = wrapper.icon; path = BrushLog.icon; sourceTree = "<group>"; };
 		8A86D6626BE37690BC127043 /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
 		8CCC00CCECC42725E399397D /* main.rs */ = {isa = PBXFileReference; path = main.rs; sourceTree = "<group>"; };
 		93F38E037545363D4F295343 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 			children = (
 				CC643FC198023D63276548CC /* assets */,
 				93F38E037545363D4F295343 /* Assets.xcassets */,
+				74D6F9663BF8F39285FC3B76 /* BrushLog.icon */,
 				2155E23599B2649755FD82DE /* LaunchScreen.storyboard */,
 				5795BDC1C61F8AC34B7165EA /* brushlog_iOS */,
 				79D44FB61BF7E029CA858C10 /* Externals */,
@@ -148,6 +151,20 @@
 				78FA87285FA1A0D6DECDA9D7 /* brushlog */,
 			);
 			path = Sources;
+			sourceTree = "<group>";
+		};
+		"TEMP_3503447C-239A-46DA-8CB0-79F62ABFF84C" /* arm64 */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = arm64;
+			sourceTree = "<group>";
+		};
+		"TEMP_91B51E09-D15B-4DDE-A183-81562406E960" /* x86_64 */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = x86_64;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -212,6 +229,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B9BFB1687E07D2471166081F /* Assets.xcassets in Resources */,
+				068FA78F35C4D7F298CBB1F0 /* BrushLog.icon in Resources */,
 				9B8F03ECE3896E1DB1DE537E /* LaunchScreen.storyboard in Resources */,
 				312FFF030BB173F2DBA61149 /* assets in Resources */,
 			);
@@ -381,7 +399,7 @@
 				ARCHS = (
 					arm64,
 				);
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = BrushLog;
 				CODE_SIGN_ENTITLEMENTS = brushlog_iOS/brushlog_iOS.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = "866845437Z";
@@ -413,7 +431,7 @@
 				ARCHS = (
 					arm64,
 				);
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = BrushLog;
 				CODE_SIGN_ENTITLEMENTS = brushlog_iOS/brushlog_iOS.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = "866845437Z";
