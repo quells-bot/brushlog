@@ -1,5 +1,6 @@
 import { ZONES, TOTAL_SECONDS } from './zones.js';
-import { beep, fanfare, vibrate } from './sound.js';
+import { beep, fanfare } from './sound.js';
+import { haptic } from './platform.js';
 
 /** @typedef {'idle' | 'running' | 'paused' | 'done'} TimerStatus */
 
@@ -133,14 +134,14 @@ export class BrushTimer {
 		this.zoneIndex += 1;
 		this.zoneElapsed = 0;
 		beep(880, 0.12);
-		vibrate(120);
+		haptic('zone');
 	}
 
 	#finish() {
 		this.#stopInterval();
 		this.status = 'done';
 		fanfare();
-		vibrate([90, 60, 90]);
+		haptic('finish');
 	}
 
 	/**

@@ -37,6 +37,7 @@
 	},
 	"dependencies": {
 		"@tauri-apps/api": "^2.12.5",
+		"@tauri-apps/plugin-haptics": "^2.4.2",
 		"idb": "^8.0.3"
 	},
 	"overrides": {

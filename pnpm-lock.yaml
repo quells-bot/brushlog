@@ -11,6 +11,9 @@ importers:
       '@tauri-apps/api':
         specifier: ^2.12.5
         version: 2.12.5
+      '@tauri-apps/plugin-haptics':
+        specifier: ^2.4.2
+        version: 2.4.2
       idb:
         specifier: ^8.0.3
         version: 8.0.3
@@ -1082,6 +1085,9 @@ packages:
     resolution: {integrity: sha512-/cOeQgqq8PBDPODOjjT0YHs4qxKCHcQMWMiBm4rLM3JNr9mZE+PHNKOK4zAkhIUtYMNL/0fweW48VNvzD1AbqA==}
     engines: {node: '>= 10'}
     hasBin: true
+
+  '@tauri-apps/plugin-haptics@2.4.2':
+    resolution: {integrity: sha512-ddoEZuUWxJORcZE6AzeRUEHx4WljV9X4gXU+r08pTfX5YTwGMTIoJcLzMV9WHZIWJVWthktKAolLVaedbZ4dhA==}
 
   '@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1':
     resolution: {integrity: sha512-/67zpWDBLV+oYAEL682s1ktXL0HgqX76f6gaVGkGnVZlBbm1zd0v4Bz8MFF2GGhoX9rvfq3KSQHubFHwa6w6/Q==}
@@ -3652,6 +3658,10 @@ snapshots:
       '@tauri-apps/cli-win32-arm64-msvc': 2.12.6
       '@tauri-apps/cli-win32-ia32-msvc': 2.12.6
       '@tauri-apps/cli-win32-x64-msvc': 2.12.6
+
+  '@tauri-apps/plugin-haptics@2.4.2':
+    dependencies:
+      '@tauri-apps/api': 2.12.5
 
   '@trickfilm400/rollup-plugin-off-main-thread@3.0.0-pre1':
     dependencies:
