@@ -3,6 +3,7 @@
 	import { exportData, importBackup } from '$lib/db.js';
 	import { parseBackup } from '$lib/backup.js';
 	import { dayKey } from '$lib/history.js';
+	import { exportFile } from '$lib/platform.js';
 
 	/** @type {HTMLInputElement} */
 	let fileInput;
@@ -16,15 +17,8 @@
 		try {
 			const backup = await exportData();
 			const json = JSON.stringify(backup, null, '\t');
-			const blob = new Blob([json], { type: 'application/json' });
-			const url = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = url;
-			a.download = `brushlog-backup-${dayKey(Date.now())}.json`;
-			document.body.appendChild(a);
-			a.click();
-			a.remove();
-			URL.revokeObjectURL(url);
+			const result = await exportFile(`brushlog-backup-${dayKey(Date.now())}.json`, json);
+			if (result === 'cancelled') return;
 			const total = backup.sessions.length + backup.summaries.length;
 			status = { kind: 'ok', text: `Exported ${total} record${total === 1 ? '' : 's'}.` };
 		} catch (err) {
