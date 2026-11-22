@@ -13,8 +13,9 @@ const config = {
 		}),
 		paths: {
 			// Set via env so the app can be hosted from a subpath (e.g. GitHub
-			// Pages project sites) without code changes.
-			base: process.env.BASE_PATH ?? ''
+			// Pages project sites) without code changes. The Tauri app always
+			// serves from the root of its local origin, so BASE_PATH is ignored.
+			base: process.env.TAURI_ENV_PLATFORM ? '' : (process.env.BASE_PATH ?? '')
 		}
 	}
 };

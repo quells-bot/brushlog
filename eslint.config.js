@@ -17,6 +17,6 @@ export default [
 		}
 	},
 	{
-		ignores: ['build/', '.svelte-kit/', 'node_modules/']
+		ignores: ['build/', '.svelte-kit/', 'node_modules/', 'src-tauri/target/', 'src-tauri/gen/']
 	}
 ];

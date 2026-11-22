@@ -41,10 +41,3 @@ export function fanfare() {
 	setTimeout(() => beep(880, 0.15), 160);
 	setTimeout(() => beep(1175, 0.25), 320);
 }
-
-/** Buzz the device if the Vibration API is available. */
-export function vibrate(/** @type {number | number[]} */ pattern) {
-	if (typeof navigator !== 'undefined' && navigator.vibrate) {
-		navigator.vibrate(pattern);
-	}
-}
