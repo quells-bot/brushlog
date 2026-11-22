@@ -64,11 +64,24 @@ Simulator, or run `pnpm ios:dev` for live reload against the Vite dev server.
    This loads from the Mac's dev server, so it is **not** offline. For the
    real, bundled app use the release install below.
 
-4. Release install (bundled, works offline):
+4. First time only — register the phone with your team. `pnpm ios:build`
+   builds for a generic device, so it never registers one and fails with
+   "Your team has no devices". Build once against the phone itself (it gets as
+   far as the "Build Rust Code" step and stops there; that's expected — the
+   device is registered and the profile created by then):
+
+   ```bash
+   xcrun devicectl list devices   # note the phone's Identifier
+   cd src-tauri/gen/apple && xcodebuild -allowProvisioningUpdates \
+     -allowProvisioningDeviceRegistration -scheme brushlog_iOS \
+     -workspace brushlog.xcodeproj/project.xcworkspace -configuration release \
+     -destination id=<device-id> build; cd -
+   ```
+
+5. Release install (bundled, works offline):
 
    ```bash
    pnpm ios:build
-   xcrun devicectl list devices
    xcrun devicectl device install app --device <device-id> src-tauri/gen/apple/build/arm64/BrushLog.ipa
    ```
 
