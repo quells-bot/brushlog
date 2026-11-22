@@ -11,7 +11,8 @@ const host = process.env.TAURI_DEV_HOST;
 
 const pwa = SvelteKitPWA({
 	registerType: 'autoUpdate',
-	injectRegister: 'auto',
+	// Registered explicitly in src/routes/+layout.svelte (src/lib/sw.js).
+	injectRegister: false,
 	manifest: {
 		name: 'BrushLog',
 		short_name: 'BrushLog',
